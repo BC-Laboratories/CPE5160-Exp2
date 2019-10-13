@@ -1,6 +1,9 @@
 #include "SD_Card.h"
 #include "SPI_Interface.h"
 
+#define clock_frequency 400000
+
+// Below is error flags
 #define no_errors 0x00
 #define illegal_command 0x01
 #define SPI_error 0x02
@@ -8,8 +11,9 @@
 #define comm_error 0x04
 
 #define CMD0 0x00
-#define CMD8 0x01
+#define CMD8 0x08
 
+//SD_select - Variable used for setting CS low and high during SD card transfers
 sbit SD_select = P1^4;
 
 uint8_t SD_Card_Init(void)
@@ -19,7 +23,7 @@ uint8_t SD_Card_Init(void)
 	uint8_t error_status;
 	uint8_t index = 0;
 
-	error_status = SPI_Master_Init(400000); //#define later
+	error_status = SPI_Master_Init(clock_frequency); //#define later
 
 
 	if(error_status == no_errors)

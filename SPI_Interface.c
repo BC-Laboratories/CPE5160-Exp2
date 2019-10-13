@@ -8,8 +8,6 @@
 #define clock_rate_error 0x02
 #define SPI_error 0x03
 
-
-
 uint8_t SPI_Master_Init(uint32_t clock_freq)
 {
 	uint8_t divider;
@@ -38,6 +36,7 @@ uint8_t SPI_Transfer(uint8_t send_value, uint8_t * received_value)
 	uint8_t status;
 	uint8_t error_flag;
 
+	//Init transfer by writing a value to SPDAT register
 	SPDAT=send_value;
 	do 
 	{
