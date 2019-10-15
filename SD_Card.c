@@ -40,11 +40,12 @@ uint8_t SD_Card_Init(void)
 	if(error_status == no_errors)
 	{
 		SD_select = 1;
-		for( index = 0; index < 10; index++)
+		for(index = 0; index < 10; index++)
 		{
 			//sends each clock cycle
 			SPI_Transfer(0x00, &received_value);
 		}
+		prinf("Initial clock cycles sent to SD");
 	}
 
 	//CMD0 Place SD Card into SPI Mode and IDLE state
@@ -54,8 +55,9 @@ uint8_t SD_Card_Init(void)
 		//Send CMD0 command
 		send_command(CMD0, 0x000000);
 		error_status = receive_response(1, rec_array);
+		prinf("CMD0 Sent");
 	}
-
+/*
 	//CMD8 if CMD0 response successful
 	if(error_status == no_errors)
 	{
@@ -133,7 +135,7 @@ uint8_t SD_Card_Init(void)
 		while((error_status = no_errors) && (rec_array != 0x01));
 	}
 	
-
+*/
 }
 
 uint8_t send_command(uint8_t command, uint32_t argument)
