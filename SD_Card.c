@@ -9,19 +9,22 @@
 
 // Below are the error flags
 #define no_errors 0x00
-#define illegal_command 0x01
+#define illegal_command 0x05
 #define SPI_error 0x02
 #define SD_timeout_error 0x03
-#define comm_error 0x04
-#define failed_init_response 0x05
+#define comm_error 0x09
+#define failed_init_response 0x10
 
 //COMMAND # constants
 #define CMD0 0
 #define CMD8 8
+#define CMD55 55
+#define CMD58 58
+#define ACMD41 41
 
 //SD_select - Variable used for setting CS low and high during SD card transfers
 sbit SD_select = P1^4;
-sfr SPIF = SPSTA^7
+//sfr SPIF = SPSTA^7
 
 
 uint8_t SD_Card_Init(void)
@@ -29,56 +32,107 @@ uint8_t SD_Card_Init(void)
 	uint8_t received_value; //used to hold value returned from SPI_Transfer
 	uint8_t error_status; //used to hold error value
 	uint8_t index = 0; //index for for loops
-	uint8_t * rec_array[5];
+	uint8_t rec_array[5];
 
 	error_status = SPI_Master_Init(clock_frequency); //#define later
+	
+	//send at least 74 clock cycles (rounded to 80, 10x 8 bytes)
 	if(error_status == no_errors)
 	{
 		SD_select = 1;
-
 		for( index = 0; index < 10; index++)
 		{
+			//sends each clock cycle
 			SPI_Transfer(0x00, &received_value);
 		}
+	}
 
+	//CMD0 Place SD Card into SPI Mode and IDLE state
+	if(error_status == no_errors)
+	{
 		SD_select = 0;
-
+		//Send CMD0 command
 		send_command(CMD0, 0x000000);
+		error_status = receive_response(1, rec_array);
+	}
 
-		receive_response(1, rec_array);
-		for( index = 0; index < 8; index++)
-		{
-			SPI_Transfer(0x00, &received_value);
-		}
-
-		if(rec_array[0] == 0x01)
+	//CMD8 if CMD0 response successful
+	if(error_status == no_errors)
+	{
+		//Exit if card not in idle state
+		if(rec_array[0] != 0x01)
 		{
 			error_status = failed_init_response; //FIXME
 		}
+		else
+		{
+			SD_select = 0;
+			//States 3.3v is accepted, with 0xAA as the check byte
+			send_command(CMD8, 0x0001AA);
+			error_status = receive_response(3, rec_array);
+		}
+		
+	}
 
+	//CMD58 send
+	if (error_status = no_errors)
+	{
+
+
+		if(rec_array[0] == illegal_command)
+		{
+			//v1 card: We won't accept it
+			error_status = illegal_command;
+		}
+		else
+		{
+			SD_select = 0;
+			send_command(CMD58, 0x00);
+			error_status = receive_response;
+		}
+	}
+
+
+
+	if(error_status == no_errors)
+	{
+		SD_select = 1;
+		
+		
 		SD_select = 0;
-		//States 3.3v is accepted, with 0xAA as the check byte
-		send_command(CMD8, 0x0001AA);
+		send_command(CMD55, 0x00);
+		error_status = receive_response( 1, rec_array);
 
-		receive_response(3, rec_array);
-		while()
-		for( index = 0; index < 8; index++)
+		for( index = 0; index < 1; index++)
 		{
 			SPI_Transfer(0x00, &received_value);
 		}
-		
-		
-		//TODO: verify these are the correct bytes to be checking in rec_array
-		if((rec_array[0] == 0xAA) && (rec_array[1] == 0x01))
-		{
 
-		}
-
-		if(error_status == no_errors)
-		{
-			//error_status = receive_response(num_bytes, rec_array);
-		}
 	}
+	
+	if (error_status = no_errors)
+	{
+
+		SD_select = 0;
+	}
+
+	if(error_status == no_errors)
+	{
+		SD_select = 1;
+		for(index = 0; index < 4; index++)
+		{
+			SPI_Transfer(0x00, &received_value);
+		}
+
+		SD_select = 0;
+		do
+		{
+			send_command(ACMD41, 0x40000000);
+			error_status = receive_response(1, rec_array);
+		}
+		while((error_status = no_errors) && (rec_array != 0x01));
+	}
+	
 
 }
 
@@ -154,7 +208,6 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 	}
 	return return_value;
  }
-
 
 uint8_t receive_response(uint8_t num_bytes, uint8_t * rec_array)
 {
