@@ -10,7 +10,9 @@
 #include <stdint.h>
 
 /*
- *
+ *Desc: 
+ *Pre:
+ *Post:
  */
 uint8_t SD_Card_Init(void);
 

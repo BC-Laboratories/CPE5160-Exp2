@@ -7,24 +7,29 @@
 
 #define clock_frequency 400000
 
-// Below is error flags
+// Below are the error flags
 #define no_errors 0x00
 #define illegal_command 0x01
 #define SPI_error 0x02
 #define SD_timeout_error 0x03
 #define comm_error 0x04
+#define failed_init_response 0x05
 
-#define CMD0 0x00
-#define CMD8 0x08
+//COMMAND # constants
+#define CMD0 0
+#define CMD8 8
 
 //SD_select - Variable used for setting CS low and high during SD card transfers
 sbit SD_select = P1^4;
+sfr SPIF = SPSTA^7
+
 
 uint8_t SD_Card_Init(void)
 {
 	uint8_t received_value; //used to hold value returned from SPI_Transfer
 	uint8_t error_status; //used to hold error value
 	uint8_t index = 0; //index for for loops
+	uint8_t * rec_array[5];
 
 	error_status = SPI_Master_Init(clock_frequency); //#define later
 	if(error_status == no_errors)
@@ -36,8 +41,39 @@ uint8_t SD_Card_Init(void)
 			SPI_Transfer(0x00, &received_value);
 		}
 
+		SD_select = 0;
 
-		//error_flag = send_command();
+		send_command(CMD0, 0x000000);
+
+		receive_response(1, rec_array);
+		for( index = 0; index < 8; index++)
+		{
+			SPI_Transfer(0x00, &received_value);
+		}
+
+		if(rec_array[0] == 0x01)
+		{
+			error_status = failed_init_response; //FIXME
+		}
+
+		SD_select = 0;
+		//States 3.3v is accepted, with 0xAA as the check byte
+		send_command(CMD8, 0x0001AA);
+
+		receive_response(3, rec_array);
+		while()
+		for( index = 0; index < 8; index++)
+		{
+			SPI_Transfer(0x00, &received_value);
+		}
+		
+		
+		//TODO: verify these are the correct bytes to be checking in rec_array
+		if((rec_array[0] == 0xAA) && (rec_array[1] == 0x01))
+		{
+
+		}
+
 		if(error_status == no_errors)
 		{
 			//error_status = receive_response(num_bytes, rec_array);
