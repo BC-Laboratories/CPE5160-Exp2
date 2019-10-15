@@ -27,7 +27,8 @@ main()
    Timer0_DELAY_1ms(300); // Delay to see RED LED (visual indication program is executing)
    //*** Initialization Functions  ***//
    uart_init(9600);
-   LCD_Init(); 
+   LCD_Init();
+   SD_Card_Init();
    LEDS_OFF(Red_LED);
    //**** Super Loop ****//
    while(1)

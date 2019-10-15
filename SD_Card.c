@@ -22,14 +22,11 @@ sbit SD_select = P1^4;
 
 uint8_t SD_Card_Init(void)
 {
-
-	uint8_t received_value;
-	uint8_t error_status;
-	uint8_t index = 0;
+	uint8_t received_value; //used to hold value returned from SPI_Transfer
+	uint8_t error_status; //used to hold error value
+	uint8_t index = 0; //index for for loops
 
 	error_status = SPI_Master_Init(clock_frequency); //#define later
-
-
 	if(error_status == no_errors)
 	{
 		SD_select = 1;
@@ -57,6 +54,7 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 	uint8_t rec_value;
 	uint8_t index = 0;
 
+	//check if command is 63 bits
 	if(command<64)
 	{
 		return_value=no_errors;
@@ -65,7 +63,9 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 	{
 		return_value=illegal_command;
 	}
+	//Append start and transmission bits to first byte
 	send_value=0x40|command;
+	//Send the first part of command
 	error_flag = SPI_Transfer(send_value, &rec_value);
 	if(error_flag!=no_errors)
 	{
@@ -73,6 +73,7 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 	}
 	if(return_value==no_errors)
 	{
+	    //send MSB first
 		send_value=(uint8_t)(argument>>24);
 		error_flag=SPI_Transfer(send_value,&rec_value);
 		if(error_flag!=no_errors)
@@ -80,6 +81,8 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 			return_value=SPI_error;
 		}
 	}
+	// TODO: is this correct
+	// Send the rest of the 4 bytes
 	for(index=0;index<4;index++)
 	{
 		if(return_value==no_errors)
@@ -92,6 +95,7 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 			}  
 		}
 	}
+	// Send checksum if CMD0 or CMD 8
 	if(command==CMD0) 
 	{
 		send_value=0x95;
@@ -138,9 +142,10 @@ uint8_t receive_response(uint8_t num_bytes, uint8_t * rec_array)
 	{
 		return_value=SD_timeout_error;
 	}
-	else if((SPI_value&0xFE)!=0x00) // 0x00 and 0x01 are good values
+	// 0x00 and 0x01 are good values
+	else if((SPI_value&0xFE)!=0x00)
 	{
-		*rec_array=SPI_value;  // return the value to see the error
+		*rec_array=SPI_value;
 		return_value=comm_error;
 	}
 	else
