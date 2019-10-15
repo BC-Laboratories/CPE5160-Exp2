@@ -1,3 +1,7 @@
+/* EXP2 - SPI and SD Card
+ * Names: Tyler Andrews, Brennan Campbell, Tyler Tetens
+ */
+
 #include "SD_Card.h"
 #include "SPI_Interface.h"
 
@@ -76,7 +80,6 @@ uint8_t send_command(uint8_t command, uint32_t argument)
 			return_value=SPI_error;
 		}
 	}
-
 	for(index=0;index<4;index++)
 	{
 		if(return_value==no_errors)

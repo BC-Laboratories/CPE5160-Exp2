@@ -1,3 +1,7 @@
+/* EXP2 - SPI and SD Card
+ * Names: Tyler Andrews, Brennan Campbell, Tyler Tetens
+ */
+
 #ifndef _SPI_Interface_H
 #define _SPI_Interface_H
 

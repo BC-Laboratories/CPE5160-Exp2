@@ -1,3 +1,7 @@
+/* EXP2 - SPI and SD Card
+ * Names: Tyler Andrews, Brennan Campbell, Tyler Tetens
+ */
+
 #include "SPI_Interface.h"
 
 #define CPOL 0
