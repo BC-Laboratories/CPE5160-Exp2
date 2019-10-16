@@ -8,11 +8,14 @@
 #include "Main.h"
 
 // error codes
-#define ILLEGAL_COMMAND 0xE0
-#define SD_INIT_ERROR 0xE1
-#define COMM_ERROR 0xE3
-#define DATA_ERROR 0xE4
-#define SEND_ERROR 0xE5
+#define illegal_command 0xE0
+#define sd_init_error 0xE1
+#define comm_error 0xE3
+#define data_error 0xE4
+#define send_error 0xE5
+#define no_errors 0x00
+#define spi_error 0x01
+#define timeout_error 0x02
 
 // SD card commands 
 #define CMD0 0
@@ -23,35 +26,31 @@
 #define CMD58 58
 #define ACMD41 41
 
-// function prototypes
+// SD card select
+sbit SD_select = P1^4;
+
+/* Desc: Sends a command to the SD Card
+ * Pre: None
+ * Post: Returns an error code or 0x00 if no_errors
+ */
 uint8_t send_command(uint8_t command, uint32_t argument);
-uint8_t receive_response(uint8_t num_bytes, uint8_t * byte_array);
+
+/* Desc: Receives the R1 or R3 response from SD Card
+ * Pre: None
+ * Post: Will modify the rec_array buffer passed to it
+ */
+uint8_t receive_response(uint8_t num_bytes, uint8_t * rec_array);
+
+/* Desc: Setups SD Card
+ * Pre: None
+ * Post: Calls SPI Master Init and returns an error code
+ */
 uint8_t SD_card_init(void);
-uint8_t read_block(uint16_t num_bytes, uint8_t * byte_array);
 
-/*
-#ifndef _SD_Card_H
-#define _SD_Card_H
-
-#include "Main.h"
-//below is for uint8_t types
-//#include <stdint.h>
-
-/*
- *Desc: 
- *Pre:
- *Post:
+/* Desc: Reads a block from SD Card
+ * Pre: None
+ * Post: Will modify the rec_array buffer passed to it
  */
-//uint8_t SD_Card_Init(void);
-
-/*
- *
- */
-//uint8_t send_command(uint8_t command, uint32_t argument);
-
-/*
- *
- */
-//uint8_t receive_response(uint8_t num_bytes,uint8_t * buffer);
+uint8_t read_block(uint16_t num_bytes, uint8_t * rec_array);
 
 #endif

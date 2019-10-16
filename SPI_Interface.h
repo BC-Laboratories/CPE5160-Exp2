@@ -6,22 +6,27 @@
 #define _SPI_Interface_H
 
 #include "Main.h"
-/*
- * Sets up the SPI peripheral
- * Parameters: clock_freq - clock frequency
- * Returns: A clock rate error (0x02) flag if something went wrong
- * Warning: Will modify the SPCON register
+
+#define no_errors 0x00
+#define timeout_error 0x02
+#define clock_rate_error 0x03
+#define SPI_error 0x01
+#define baud_error 0x09
+
+#define spi_clock_freq 400000
+#define CPOL 0
+#define CPHA 0
+
+/* Desc: Sets up the SPI
+ * Pre: Must be passed a maximum clock frequency
+ * Post: Returns an error code or 0x00 if no errors
  */
 uint8_t SPI_Master_Init(uint32_t clock_freq);
 
-/*
- * Sends a single byte over SPI
- * Parameters: send_value - value to be sent over SPI
- *             received_value - response back over SPI
- * Returns: A SPI (0x03) or timeout (0x01) error flag
- * Warning: Will modify the SPDAT and SPSTA register.
- *          Will modify the received_value buffer sent to it
+/* Desc: Transfers a byte over SPI
+ * Pre: SPI must be init
+ * Post: Returns an error code or 0x00 if no errors
  */
-uint8_t SPI_transfer(uint8_t send_value, uint8_t * received_value);
+uint8_t SPI_Transfer(uint8_t send_value, uint8_t * received_value);
 
 #endif
