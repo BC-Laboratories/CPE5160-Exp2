@@ -12,6 +12,7 @@
 #define timeout_error 0x01
 #define clock_rate_error 0x02
 #define SPI_error 0x03
+#define baud_error 0x09
 
 uint8_t SPI_Master_Init(uint32_t clock_freq)
 {
@@ -20,8 +21,42 @@ uint8_t SPI_Master_Init(uint32_t clock_freq)
 
 	divider=(OSC_FREQ*6)/(OSC_PER_INST*clock_freq);
 	//printf("Divider is %u \n", divider);
+	if(divider < 2)
+	{
+		SPCON=0x70|(CPOL<<3)|(CPHA<<2); 
+	}
+	else if(divider < 4)
+	{
+		SPCON=0x71|(CPOL<<3)|(CPHA<<2); 
+	}
+	else if(divider < 8)
+	{
+		SPCON=0x72|(CPOL<<3)|(CPHA<<2); 
+	}
+	else if(divider < 16)
+	{
+		SPCON=0x73|(CPOL<<3)|(CPHA<<2); 
+	}
+	else if(divider < 32)
+	{
+		SPCON=0x74|(CPOL<<3)|(CPHA<<2); 
+	}
+	else if(divider < 64)
+	{
+		SPCON=0xF0|(CPOL<<3)|(CPHA<<2); 
+	}
+	else if(divider < 128)
+	{
 
-	SPCON=0x73|(CPOL<<3)|(CPHA<<2); 
+	}
+	else
+	{
+		return_value = 0x09;
+		printf("Baud Scaling Error\n");
+	}
+	
+	
+	
 
 	return return_value;
 }
