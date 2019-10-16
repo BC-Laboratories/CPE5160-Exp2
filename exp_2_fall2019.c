@@ -7,7 +7,8 @@
 #include "LCD_routines.h"
 #include "LED_Outputs.h"
 #include "Long_Serial_In.h"
-
+#include "SD_Card.h"
+#include "SPI_Interface.h"
 
 
 main()
@@ -28,7 +29,7 @@ main()
    //*** Initialization Functions  ***//
    uart_init(9600);
    LCD_Init();
-   SD_Card_Init();
+   SD_card_init();
    LEDS_OFF(Red_LED);
    //**** Super Loop ****//
    while(1)

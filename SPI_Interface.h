@@ -6,7 +6,6 @@
 #define _SPI_Interface_H
 
 #include "Main.h"
-
 /*
  * Sets up the SPI peripheral
  * Parameters: clock_freq - clock frequency
@@ -23,6 +22,6 @@ uint8_t SPI_Master_Init(uint32_t clock_freq);
  * Warning: Will modify the SPDAT and SPSTA register.
  *          Will modify the received_value buffer sent to it
  */
-uint8_t SPI_Transfer(uint8_t send_value, uint8_t * received_value);
+uint8_t SPI_transfer(uint8_t send_value, uint8_t * received_value);
 
 #endif

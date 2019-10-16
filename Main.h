@@ -38,7 +38,7 @@
 //  6 - Various Infineon and Philips devices, etc.
 //  4 - Dallas 320, 520 etc.
 //  1 - Dallas 420, etc.
-#define OSC_PER_INST (6)
+#define OSC_PER_INST (12)
 
 //------------------------------------------------------------------
 // SHOULD NOT NEED TO EDIT THE SECTIONS BELOW

@@ -98,9 +98,6 @@ sfr KBLS = 0x9C;
 sfr KBE  = 0x9D;
 sfr KBF  = 0x9E;
 
-
-
-
 /*  BIT Registers  */
 /*  PSW   */
 sbit CY   = PSW^7;
