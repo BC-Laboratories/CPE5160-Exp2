@@ -26,6 +26,8 @@
 #define CMD58 58
 #define ACMD41 41
 
+#define block_size 512
+
 // SD card select
 sbit SD_select = P1^4;
 

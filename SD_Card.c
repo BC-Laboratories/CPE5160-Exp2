@@ -99,6 +99,7 @@ uint8_t receive_response(uint8_t num_bytes, uint8_t *rec_array)
 	{
 	}
 	// Check for either 0x00 or 0x01. Both are good values.
+	// 0xFE is the mask used to check
 	else if((SPI_value&0xFE)!=0x00)
 	{
 		*rec_array=SPI_value;

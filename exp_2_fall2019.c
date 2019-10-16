@@ -34,16 +34,16 @@ int main()
 	//**** Super Loop ****//
 	while(1)
 	{
-		uint8_t xdata rec_array[512] = {0}; //buffer used for block
+		uint8_t xdata rec_array[block_size] = {0}; //buffer used for block
 		uint32_t input_value;
 		//Example of how to use long serial input function to read a 32-bit input value
 		printf("Input a value: ");
 		input_value = long_serial_input();
 		SD_select = 0;
 		send_command(CMD17, input_value);
-		read_block(512, &rec_array);
+		read_block(block_size, &rec_array);
 		SD_select = 1;
-		print_memory(&rec_array,512);
+		print_memory(&rec_array,block_size);
 		//Notice the 'l' modifier on %u which indicates a long (32-bit value)
 		//If the value to print is a char (8-bit value), then use a 'b' modifier (%bu).
         printf("Value Entered = %lu\n\r", input_value);	
